@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Food Court Pricing System</title>
+  <style>
+    :root {
+      --orange: #f97316;
+      --red: #ef4444;
+      --green: #16a34a;
+      --gray-50: #f9fafb;
+      --gray-200: #e5e7eb;
+      --gray-700: #374151;
+      --blue-200: #bfdbfe;
+      --green-200: #dcfce7;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom right, #FFEDD5, #FECACA);
+      margin: 0;
+      padding: 1rem;
+      color: #111827;
+    }
+    .container {
+      max-width: 880px;
+      margin: auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgb(0 0 0 / 0.1);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(to right, var(--orange), var(--red));
+      color: white;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+      flex-grow: 1;
+    }
+    header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 0.95rem;
+    }
+    main {
+      padding: 1rem;
+    }
+    .row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .col {
+      flex: 1;
+      min-width: 240px;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+      color: var(--gray-700);
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      font-size: 1rem;
+      padding: 0.6rem 0.7rem;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .btn {
+      background: linear-gradient(to right, var(--orange), var(--red));
+      border: none;
+      color: white;
+      font-weight: bold;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: filter 0.2s ease;
+    }
+    .btn:hover {
+      filter: brightness(0.95);
+    }
+    .btn.secondary {
+      background: white;
+      border: 2px solid var(--gray-200);
+      color: #111827;
+    }
+    .btn.block {
+      width: 100%;
+    }
+    section {
+      margin-top: 1.2rem;
+      background: var(--gray-50);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    section h2 {
+      font-size: 1.15rem;
+      margin: 0 0 0.8rem;
+      color: var(--gray-700);
+    }
+    .platforms {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .platforms button {
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      background: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .platforms button.selected {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: white;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.4rem 1rem;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .feature-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+    }
+    .table-wrap {
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #e5e7eb;
+    }
+    th,
+    td {
+      padding: 0.6rem 0.7rem;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    th {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+    .number-input {
+      width: 110px;
+      padding: 0.4rem 0.5rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+    .muted {
+      color: #6b7280;
+      font-size: 0.9rem;
+    }
+    .pill {
+      display: inline-block;
+      background: #fff7ed;
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+    }
+    .pricing {
+      background: linear-gradient(to right, var(--green-200, #dcfce7), var(--blue-200));
+      border-radius: 12px;
+      padding: 1rem;
+    }
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      background: white;
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+      border: 1px solid #ddd;
+      align-items: center;
+    }
+    .stat strong {
+      font-size: 1.15rem;
+    }
+    .right {
+      text-align: right;
+    }
+    .badge-green {
+      color: #166534;
+    }
+    .badge-orange {
+      color: #c2410c;
+    }
+    .row-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .small {
+      font-size: 0.85rem;
+    }
+    @media (max-width: 480px) {
+      header h1 {
+        font-size: 1.25rem;
+      }
+      .stat strong {
+        font-size: 1.05rem;
+      }
+      th,
+      td {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="font-size:1.6rem">🍳</div>
+      <div>
+        <h1>Smart Food Court Pricing</h1>
+        <p>AI-Powered Menu & Cost Analysis</p>
+      </div>
+    </header>
+    <main>
+      <section>
+        <h2>Dish & Target</h2>
+        <div class="row">
+          <div class="col">
+            <label for="dishName">Dish Name</label>
+            <input type="text" id="dishName" placeholder="e.g., Paneer Butter Masala" />
+          </div>
+          <div class="col">
+            <label for="profitMargin">Profit Margin</label>
+            <input type="range" id="profitMargin" min="10" max="60" value="25" />
+            <div class="muted">
+              Current: <span id="profitMarginValue">25</span>%
+            </div>
+          </div>
+          <div class="col">
+            <label for="servings">Servings</label>
+            <input type="number" id="servings" min="1" step="1" value="4" />
+            <div class="muted">Prices shown per serving</div>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button id="autoEstimateBtn" class="btn">Auto-estimate Ingredients</button>
+          <button id="clearIngredientsBtn" class="btn secondary">Clear Ingredients</button>
+        </div>
+      </section>
+      <section>
+        <h2>Platform Selection</h2>
+        <div class="platforms">
+          <button type="button" class="selected" data-platform="society">
+            Society
+          </button>
+          <button type="button" data-platform="zomato">Zomato</button>
+          <button type="button" data-platform="swiggy">Swiggy</button>
+        </div>
+        <div class="muted small" style="margin-top: 0.4rem">
+          Zomato/Swiggy add a 25% platform multiplier. Society customers get a
+          15% discount.
+        </div>
+      </section>
+      <section>
+        <h2>
+          Unique Features <span class="pill">+5% per feature</span>
+        </h2>
+        <div class="features" id="features">
+          <label class="feature-item"
+            ><input type="checkbox" class="feature" value="liveCooking" />Live
+            Cooking</label
+          >
+          <label class="feature-item"
+            ><input type="checkbox" class="feature" value="realPaneer" />Real
+            Paneer</label
+          >
+          <label class="feature-item"
+            ><input type="checkbox" class="feature" value="uniqueTaste" />
+            Unique Taste</label
+          >
+          <label class="feature-item"
+            ><input type="checkbox" class="feature" value="freshIngredients" />
+            Fresh Ingredients</label
+          >
+          <label class="feature-item"
+            ><input type="checkbox" class="feature" value="customSpices" />
+            Custom Spices</label
+          >
+          <label class="feature-item"
+            ><input type="checkbox" class="feature" value="healthyOption" />
+            Healthy Option</label
+          >
+        </div>
+      </section>
+      <section>
+        <h2>AI Ingredient Estimation</h2>
+        <details>
+          <summary>Advanced</summary>
+          <div>
+            <label for="defaultPrompt">Default Prompt:</label>
+            <input type="text" id="defaultPrompt" value="Estimate ingredients for [dish name] for [servings] servings in Indian style. Return ONLY a valid JSON array of objects with fields: name (string), qty (number), unit (one of g, kg, ml, L, pcs, tbsp, tsp), unitPrice (number, INR). No markdown, no explanations, no extra text. make prices realistic and keep in accout we use real ingredients." readonly>
+          </div>
+          <label for="customPrompt">Custom Prompt (optional):</label>
+          <input type="text" id="customPrompt" placeholder="e.g. Estimate ingredients for Pav Bhaji for 4 servings">
+        </details>
+        <button id="estimateIngredientsBtn" class="btn">Auto-estimate Ingredients</button>
+        <div id="aiStatus" class="muted small" style="margin-top:0.5rem"></div>
+      </section>
+      
+      <section>
+        <h2>Ingredients</h2>
+        <div class="table-wrap">
+          <table id="ingredientsTable">
+            <thead>
+              <tr>
+                <th style="min-width: 160px">Name</th>
+                <th>Quantity</th>
+                <th>Unit</th>
+                <th>Unit Price (₹ per)</th>
+                <th>Total (₹)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="ingredientsBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6">
+                  <button id="addRowBtn" class="btn small">+ Add Ingredient</button>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div class="stat">
+          <div><strong>Total Base Cost</strong></div>
+          <div class="right"><strong>₹<span id="totalBaseCost">0</span></strong></div>
+        </div>
+      </section>
+      <section class="pricing" id="pricingSection">
+        <h2>Final Pricing</h2>
+        <div class="stat">
+          <div>Base Cost (per serving)</div>
+          <div class="right"><strong>₹<span id="outputBaseCost">0</span></strong></div>
+        </div>
+        <div class="stat">
+          <div>
+            Selling Price <span class="badge-orange small" id="priceBreakNote"></span>
+          </div>
+          <div class="right">
+            <strong class="badge-orange">₹<span id="outputSellingPrice">0</span></strong>
+          </div>
+        </div>
+        <div class="stat" id="residentStat" style="display: none">
+          <div>Resident Price (15% OFF)</div>
+          <div class="right">
+            <strong class="badge-green">₹<span id="outputResidentPrice">0</span></strong>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    // State variables
+    let platform = "society";
+    let profitMargin = 25;
+
+    // DOM references
+    const profitMarginInput = document.getElementById("profitMargin");
+    const profitMarginValue = document.getElementById("profitMarginValue");
+    const platformButtons = document.querySelectorAll(".platforms button");
+    const ingredientsBody = document.getElementById("ingredientsBody");
+    const totalBaseCostEl = document.getElementById("totalBaseCost");
+    const outputBaseCost = document.getElementById("outputBaseCost");
+    const outputSellingPrice = document.getElementById("outputSellingPrice");
+    const outputResidentPrice = document.getElementById("outputResidentPrice");
+    const residentStat = document.getElementById("residentStat");
+    const priceBreakNote = document.getElementById("priceBreakNote");
+    const aiStatus = document.getElementById("aiStatus");
+    const dishNameInput = document.getElementById("dishName");
+    const autoEstimateBtn = document.getElementById("autoEstimateBtn");
+    const clearIngredientsBtn = document.getElementById("clearIngredientsBtn");
+    const addRowBtn = document.getElementById("addRowBtn");
+    const servingsInput = document.getElementById("servings");
+
+    // Create a row for the ingredients table
+    function createRow(row = {}) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>
+          <input
+            type="text"
+            class="name-input"
+            placeholder="e.g., Paneer"
+            value="${row.name || ""}"
+            style="width:100%; padding:0.4rem 0.5rem; border:1px solid #d1d5db; border-radius:8px;"
+          />
+        </td>
+        <td>
+          <input
+            type="number"
+            class="qty-input number-input"
+            min="0"
+            step="0.01"
+            value="${row.qty ?? ""}"
+          />
+        </td>
+        <td>
+          <select
+            class="unit-input"
+            style="padding:0.4rem 0.5rem; border:1px solid #d1d5db; border-radius:8px;"
+          >
+            ${["g", "kg", "ml", "L", "pcs", "tbsp", "tsp"]
+              .map(
+                (u) =>
+                  `<option ${
+                    row.unit === u ? "selected" : ""
+                  } value="${u}">${u}</option>`
+              )
+              .join("")}
+          </select>
+        </td>
+        <td>
+          <div style="display:flex; gap:0.4rem; align-items:center">
+            <input
+              type="number"
+              class="unitPrice-input number-input"
+              min="0"
+              step="0.01"
+              value="${row.unitPrice ?? ""}"
+            />
+            <select
+              class="pricePer-input"
+              style="padding:0.4rem 0.5rem; border:1px solid #d1d5db; border-radius:8px;"
+            >
+              ${["g", "kg", "ml", "L", "pcs", "tbsp", "tsp"]
+                .map((u) => `<option value="${u}">${u}</option>`)
+                .join("")}
+            </select>
+          </div>
+        </td>
+        <td class="totalCell">0</td>
+        <td><button class="btn secondary small removeRowBtn" type="button">Remove</button></td>
+      `;
+
+      if (!row.unit) {
+        tr.querySelector(".unit-input").value = "g";
+      }
+      // Set default price basis to match Unit; allow manual override
+      const unitSel = tr.querySelector(".unit-input");
+      const pricePerSel = tr.querySelector(".pricePer-input");
+      const defaultPricePer = row.pricePer || unitSel.value;
+      pricePerSel.value = defaultPricePer;
+
+      // Wire recalc on input change
+      tr.querySelectorAll("input, select").forEach((el) =>
+        el.addEventListener("input", recalc)
+      );
+      // Sync price-per with unit unless user changed price-per manually
+      let pricePerTouched = false;
+      let prevUnit = unitSel.value;
+      pricePerSel.addEventListener("change", () => {
+        pricePerTouched = true;
+        recalc();
+      });
+      unitSel.addEventListener("change", () => {
+        const newUnit = unitSel.value;
+        if (!pricePerTouched || pricePerSel.value === prevUnit) {
+          pricePerSel.value = newUnit;
+        }
+        prevUnit = newUnit;
+        recalc();
+      });
+
+      // Remove row button
+      tr.querySelector(".removeRowBtn").addEventListener("click", () => {
+        tr.remove();
+        recalc();
+      });
+
+      return tr;
+    }
+
+    // Unit conversion helpers
+    function getUnitInfo(u) {
+      switch (u) {
+        case "g": return { category: "weight", toBase: 1 };
+        case "kg": return { category: "weight", toBase: 1000 };
+        case "ml": return { category: "volume", toBase: 1 };
+        case "L": return { category: "volume", toBase: 1000 };
+        case "tsp": return { category: "spoon", toBase: 1 };
+        case "tbsp": return { category: "spoon", toBase: 3 };
+        case "pcs": return { category: "count", toBase: 1 };
+        default: return { category: "other", toBase: 1 };
+      }
+    }
+
+    function computeCostWithConversion(qty, qtyUnit, unitPrice, pricePerUnit) {
+      const a = getUnitInfo(qtyUnit);
+      const b = getUnitInfo(pricePerUnit);
+      if (a.category === b.category) {
+        const factor = a.toBase / b.toBase; // qty units to price-per units
+        return +(qty * unitPrice * factor).toFixed(2);
+      }
+      // Incompatible categories; multiply directly and warn via console
+      console.warn(`Incompatible units: ${qtyUnit} vs price per ${pricePerUnit}. No conversion applied.`);
+      return +(qty * unitPrice).toFixed(2);
+    }
+
+    // Recalculate total costs and pricing
+    function recalc() {
+      let baseCost = 0;
+      let mismatches = 0;
+      [...ingredientsBody.querySelectorAll("tr")].forEach((tr) => {
+        const qty = parseFloat(tr.querySelector(".qty-input").value) || 0;
+        const unitPrice = parseFloat(tr.querySelector(".unitPrice-input").value) || 0;
+        const qtyUnit = tr.querySelector(".unit-input").value;
+        const pricePerUnit = tr.querySelector(".pricePer-input").value;
+        const a = getUnitInfo(qtyUnit);
+        const b = getUnitInfo(pricePerUnit);
+        if (a.category !== b.category) mismatches++;
+        const total = computeCostWithConversion(qty, qtyUnit, unitPrice, pricePerUnit);
+        tr.querySelector(".totalCell").textContent = total;
+        baseCost += total;
+      });
+      baseCost = Math.max(0, +baseCost.toFixed(2));
+      totalBaseCostEl.textContent = baseCost.toFixed(2);
+      const servings = Math.max(1, Number(servingsInput?.value) || 1);
+      const basePerServing = +(baseCost / servings).toFixed(2);
+      outputBaseCost.textContent = basePerServing.toFixed(2);
+
+      // Feature premium calculation
+      const activeFeatures = document.querySelectorAll(".feature:checked").length;
+      const featurePremium = activeFeatures * 0.05;
+
+      // Platform multiplier
+      let platformMultiplier = 1;
+      if (platform === "zomato" || platform === "swiggy") platformMultiplier = 1.25;
+
+      const sellingPrice = Math.round(
+        basePerServing * (1 + profitMargin / 100) * platformMultiplier * (1 + featurePremium)
+      );
+
+      const residentPrice =
+        platform === "society" ? Math.round(sellingPrice * 0.85) : sellingPrice;
+
+      outputSellingPrice.textContent = sellingPrice;
+      outputResidentPrice.textContent = residentPrice;
+
+      residentStat.style.display = platform === "society" ? "flex" : "none";
+
+      // Price breakdown display
+      const parts = [
+        `Profit ${profitMargin}%`,
+        ...(activeFeatures > 0 ? [`Features +${activeFeatures * 5}%`] : []),
+        ...(platformMultiplier > 1 ? ["Platform +25%"] : []),
+      ];
+      priceBreakNote.textContent = parts.length ? `(${parts.join(" · ")})` : "";
+      if (typeof aiStatus !== "undefined" && aiStatus) {
+        if (mismatches > 0) {
+          aiStatus.textContent = `Note: ${mismatches} row(s) use incompatible units for quantity and price basis; conversion skipped.`;
+        } else if (aiStatus.textContent && aiStatus.textContent.startsWith("Note:")) {
+          aiStatus.textContent = "";
+        }
+      }
+    }
+
+    // Event: Profit margin slider
+    profitMarginInput.addEventListener("input", (e) => {
+      profitMargin = Number(e.target.value) || 0;
+      profitMarginValue.textContent = profitMargin;
+      recalc();
+    });
+
+    // Event: Platform selection buttons
+    platformButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        platformButtons.forEach((b) => b.classList.remove("selected"));
+        btn.classList.add("selected");
+        platform = btn.getAttribute("data-platform");
+        recalc();
+      });
+    });
+
+    // Event: Features checkboxes
+    document.querySelectorAll(".feature").forEach((chk) => {
+      chk.addEventListener("change", recalc);
+    });
+
+    // Event: Add ingredient row button
+    addRowBtn.addEventListener("click", () => {
+      ingredientsBody.appendChild(createRow({ unit: "g" }));
+      recalc();
+    });
+
+    // Event: Clear ingredients button
+    clearIngredientsBtn.addEventListener("click", () => {
+      ingredientsBody.innerHTML = "";
+      ingredientsBody.appendChild(createRow({ unit: "g" }));
+      recalc();
+    });
+
+    // Load API key from config.js - configure in config.js file
+    const API_KEY = API_CONFIG.apiKey;
+
+    async function fetchIngredientsAI(dishName) {
+      if (!dishName.trim()) return [];
+      if (!API_KEY || /your[_-]?actual|YOUR_API_KEY_HERE/i.test(String(API_KEY))) {
+        if (aiStatus) aiStatus.textContent = "Missing API key. Open config.js and set API_CONFIG.apiKey.";
+        else alert("Missing API key. Open config.js and set API_CONFIG.apiKey to your Google AI key.");
+        return [];
+      }
+      const url = `${API_CONFIG.baseUrl}/${API_CONFIG.model}:generateContent?key=${API_KEY}`;
+
+      const defaultPromptEl = document.getElementById("defaultPrompt");
+      const customPromptEl = document.getElementById("customPrompt");
+
+      let prompt = "";
+      if (customPromptEl && customPromptEl.value.trim()) {
+        prompt = customPromptEl.value.trim();
+      } else if (defaultPromptEl) {
+        prompt = defaultPromptEl.value;
+      } else {
+        prompt = `Estimate ingredients for [dish name] for [servings] servings, in Indian style, with realistic quantities use pcs any where you can liek you you use 4 pcs of Tomato try to keep every thing very cheap.`;
+      }
+
+      // Replace placeholders in the final prompt string
+      prompt = prompt.replace("[dish name]", dishName);
+      const servingsVal = Math.max(1, Number(servingsInput?.value) || 4);
+      prompt = prompt.replace("[servings]", String(servingsVal));
+
+      const body = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: prompt }]
+          }
+        ],
+        generationConfig: {
+          responseMimeType: "application/json"
+        }
+      };
+      console.log("Prompt sent to Gemini API:", prompt);
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) {
+          try {
+            const errJson = await res.json();
+            const msg = errJson?.error?.message || `${res.status} ${res.statusText}`;
+            if (aiStatus) aiStatus.textContent = `Google AI API error: ${msg}`;
+            else alert(`Google AI API error: ${msg}`);
+          } catch (_) {
+            if (aiStatus) aiStatus.textContent = `Google AI API error: ${res.status} ${res.statusText}`;
+            else alert(`Google AI API error: ${res.status} ${res.statusText}`);
+          }
+          return [];
+        }
+        const data = await res.json();
+        let text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        
+        // Improved response parsing
+        if (text.startsWith("```")) {
+          text = text.replace(/```json/g, "").replace(/```/g, "");
+        } else if (text.startsWith("Okay") || text.startsWith("Here")) {
+          // Extract JSON from text response
+          const jsonMatch = text.match(/\[.*\]/s);
+          if (jsonMatch) text = jsonMatch[0];
+        }
+        
+        if (!text.trim()) return [];
+        
+        try {
+          const parsed = JSON.parse(text);
+          if (Array.isArray(parsed)) return parsed;
+          if (parsed && Array.isArray(parsed.ingredients)) return parsed.ingredients;
+          return [];
+        } catch (err) {
+          // Fallback: try to coerce simple line-based lists into JSON
+          try {
+            const lines = text
+              .split(/\r?\n/)
+              .map(l => l.trim())
+              .filter(Boolean)
+              .filter(l => !l.startsWith("#"));
+            const items = lines.map(l => {
+              // Examples: "Tomato - 2 pcs" or "2 pcs Tomato"
+              const dashParts = l.split(" - ");
+              if (dashParts.length === 2) {
+                const [name, qtyUnit] = dashParts;
+                const m = qtyUnit.match(/([0-9]+(?:\.[0-9]+)?)\s*(g|kg|ml|L|pcs|tbsp|tsp)/i);
+                return {
+                  name: name.trim(),
+                  qty: m ? Number(m[1]) : 0,
+                  unit: m ? m[2] : "pcs",
+                  unitPrice: 0
+                };
+              }
+              const m = l.match(/([0-9]+(?:\.[0-9]+)?)\s*(g|kg|ml|L|pcs|tbsp|tsp)\s+(.*)/i);
+              if (m) {
+                return { name: m[3].trim(), qty: Number(m[1]), unit: m[2], unitPrice: 0 };
+              }
+              return { name: l.replace(/^[0-9]+[\).]\s*/, "").trim(), qty: 0, unit: "pcs", unitPrice: 0 };
+            });
+            return items;
+          } catch (_) {
+            console.error("Failed to parse API response:", text);
+            if (aiStatus) aiStatus.textContent = "AI returned an unexpected format. Using fallback.";
+            return [];
+          }
+        }
+      } catch (err) {
+        alert("Failed to fetch from Google AI API: " + err.message);
+        return [];
+      }
+    }
+
+    // Auto-estimate button click handler
+    autoEstimateBtn.addEventListener("click", async () => {
+      const dishName = dishNameInput.value.trim();
+      if (!dishName) {
+        alert("Please enter a dish name!");
+        return;
+      }
+      autoEstimateBtn.disabled = true;
+      autoEstimateBtn.textContent = "Estimating...";
+      let ingredients = await fetchIngredientsAI(dishName);
+      if (!ingredients || ingredients.length === 0) {
+        ingredients = estimateIngredientsLocally(dishName);
+        if (aiStatus) aiStatus.textContent = "Using local estimate (AI unavailable).";
+      } else if (aiStatus) aiStatus.textContent = "";
+      ingredientsBody.innerHTML = "";
+      ingredients.forEach((ing) => {
+        if (!ing.unit) ing.unit = "g";
+        ingredientsBody.appendChild(createRow(ing));
+      });
+      recalc();
+      autoEstimateBtn.disabled = false;
+      autoEstimateBtn.textContent = "Auto-estimate Ingredients";
+    });
+
+    // Also wire the AI section's button if present
+    const estimateIngredientsBtn = document.getElementById("estimateIngredientsBtn");
+    if (estimateIngredientsBtn) {
+      estimateIngredientsBtn.addEventListener("click", async () => {
+        const dishName = dishNameInput.value.trim();
+        if (!dishName) {
+          alert("Please enter a dish name!");
+          return;
+        }
+        estimateIngredientsBtn.disabled = true;
+        estimateIngredientsBtn.textContent = "Estimating...";
+        let ingredients = await fetchIngredientsAI(dishName);
+        if (!ingredients || ingredients.length === 0) {
+          ingredients = estimateIngredientsLocally(dishName);
+          if (aiStatus) aiStatus.textContent = "Using local estimate (AI unavailable).";
+        } else if (aiStatus) aiStatus.textContent = "";
+        ingredientsBody.innerHTML = "";
+        ingredients.forEach((ing) => {
+          if (!ing.unit) ing.unit = "g";
+          ingredientsBody.appendChild(createRow(ing));
+        });
+        recalc();
+        estimateIngredientsBtn.disabled = false;
+        estimateIngredientsBtn.textContent = "Auto-estimate Ingredients";
+      });
+    }
+
+    // Local fallback estimator when AI is unavailable
+    function estimateIngredientsLocally(dishName) {
+      const name = dishName.toLowerCase();
+      const common = [
+        { name: "Oil", qty: 2, unit: "tbsp", unitPrice: 0 },
+        { name: "Salt", qty: 1, unit: "tsp", unitPrice: 0 },
+        { name: "Turmeric", qty: 0.5, unit: "tsp", unitPrice: 0 },
+        { name: "Red Chili Powder", qty: 0.5, unit: "tsp", unitPrice: 0 }
+      ];
+      if (name.includes("paneer") && name.includes("butter")) {
+        return [
+          { name: "Paneer", qty: 200, unit: "g", unitPrice: 0 },
+          { name: "Butter", qty: 2, unit: "tbsp", unitPrice: 0 },
+          { name: "Tomato", qty: 3, unit: "pcs", unitPrice: 0 },
+          { name: "Onion", qty: 1, unit: "pcs", unitPrice: 0 },
+          { name: "Ginger Garlic Paste", qty: 1, unit: "tbsp", unitPrice: 0 },
+          { name: "Cream", qty: 2, unit: "tbsp", unitPrice: 0 },
+          ...common
+        ];
+      }
+      if (name.includes("pav") && name.includes("bhaji")) {
+        return [
+          { name: "Potato", qty: 3, unit: "pcs", unitPrice: 0 },
+          { name: "Tomato", qty: 2, unit: "pcs", unitPrice: 0 },
+          { name: "Onion", qty: 1, unit: "pcs", unitPrice: 0 },
+          { name: "Capsicum", qty: 1, unit: "pcs", unitPrice: 0 },
+          { name: "Pav Bhaji Masala", qty: 2, unit: "tsp", unitPrice: 0 },
+          ...common
+        ];
+      }
+      if (name.includes("biryani")) {
+        return [
+          { name: "Basmati Rice", qty: 250, unit: "g", unitPrice: 0 },
+          { name: "Onion", qty: 2, unit: "pcs", unitPrice: 0 },
+          { name: "Tomato", qty: 1, unit: "pcs", unitPrice: 0 },
+          { name: "Garam Masala", qty: 1, unit: "tsp", unitPrice: 0 },
+          { name: "Yogurt", qty: 3, unit: "tbsp", unitPrice: 0 },
+          ...common
+        ];
+      }
+      // Generic baseline for unknown dishes
+      return [
+        { name: "Onion", qty: 1, unit: "pcs", unitPrice: 0 },
+        { name: "Tomato", qty: 2, unit: "pcs", unitPrice: 0 },
+        { name: "Garlic", qty: 4, unit: "pcs", unitPrice: 0 },
+        ...common
+      ];
+    }
+
+    // Warn if running from file:// which can cause API issues
+    try {
+      if (location.protocol === 'file:' && aiStatus) {
+        aiStatus.textContent = 'Tip: Serve this via http://localhost (e.g., python3 -m http.server) for better AI compatibility.';
+      }
+    } catch(_) {}
+
+    // Initialize with one empty row
+    if (ingredientsBody.children.length === 0) {
+      ingredientsBody.appendChild(createRow({ unit: "g" }));
+    }
+    recalc();
+  </script>
+</body>
+</html>
+
